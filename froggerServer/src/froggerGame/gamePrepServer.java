@@ -22,9 +22,9 @@ public class gamePrepServer {
 		frogSprite frog;
 		logSprite log[][];
 		carSprite car[][];
-
+		
 		//scoreSQL scoreDB;
-		//int score = 0;
+		score score = new score(0);
 		
 		//set up score db
 		//scoreDB = new scoreSQL();
@@ -80,7 +80,6 @@ public class gamePrepServer {
 				temp += 100;
 			}
 		}
-
 		//set up score label
 		//score = scoreDB.getScore();
 				
@@ -97,9 +96,6 @@ public class gamePrepServer {
 			}
 		}
 		*/
-		
-		
-		
 		final int SERVER_PORT = 5556;
 		Thread serverThread = new Thread ( new Runnable () {
 			
@@ -116,7 +112,7 @@ public class gamePrepServer {
 							Socket s = server.accept();
 							System.out.println("client connected");
 							
-							ServerService myService = new ServerService (s, frog, car, log);
+							ServerService myService = new ServerService (s, frog, log, car, score);
 							Thread serverServiceThread = new Thread(myService);
 							serverServiceThread.start();
 						}
