@@ -255,7 +255,25 @@ public class ServerService implements Runnable {
 			//open a socket to client
 			//.....
 			
+			//send response back to client
+			Socket s2 = new Socket("localhost", CLIENT_PORT);
 			
+			//Initialize data stream to send data out
+			OutputStream outstream = s2.getOutputStream();
+			PrintWriter out = new PrintWriter(outstream);
+			
+			for ( int i = 0; i < log.length; i++ ) {
+				for ( int j = 0; j < log[i].length; j++ ) {
+					
+					String commandOut = "GETLOG\n" + log[i][j].getX() + "\n" + log[i][j].getY() + "\n";  /* + car[i][j].getIsMoving()*/
+					System.out.println("Sending: " + commandOut);
+					out.println(commandOut);
+					out.flush();
+					
+				}
+			}
+			
+			s2.close();
 			
 			return;
 			
