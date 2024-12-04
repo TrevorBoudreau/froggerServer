@@ -1,3 +1,5 @@
+package froggerGame;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -7,7 +9,7 @@ import java.util.Scanner;
 
 //processing routine on server (B)
 public class ServerService implements Runnable {
-	final int CLIENT_PORT = 5656;
+	final int CLIENT_PORT = 5555;
 
 	private Socket s;
 	private Scanner in;
@@ -16,6 +18,8 @@ public class ServerService implements Runnable {
 	private logSprite log[][];
 	private carSprite car[][];
 	private score score;
+
+	private char[] command;
 	
 	public ServerService() {}
 
@@ -35,7 +39,7 @@ public class ServerService implements Runnable {
 			
 		} catch (IOException e){
 			e.printStackTrace();
-			
+		
 		} finally {
 			try {
 				s.close();
@@ -68,12 +72,16 @@ public class ServerService implements Runnable {
 		
 		if ( command.equals("MOVEFROG") ) {
 			
+			System.out.println("RECIEVED: " + command);
+			
 			String direction = in.next();
 			
 			int x = frog.getX();
 			int y = frog.getY();
 			
 			if (direction.equals("UP")) {
+				
+				System.out.println("RECIEVED: " + direction);
 				
 				//MOVE UP ONE STEP
 				y -= gameProperties.STEP;
@@ -107,17 +115,97 @@ public class ServerService implements Runnable {
 			frog.setX(x);
 			frog.setY(y);
 			
+			//send response back to client
+			Socket s2 = new Socket("localhost", CLIENT_PORT);
+			
+			//Initialize data stream to send data out
+			OutputStream outstream = s2.getOutputStream();
+			PrintWriter out = new PrintWriter(outstream);
+
+			String commandOut = "GETFROG\n" + frog.getX() + "\n" + frog.getY() + "\n";
+			System.out.println("Sending: " + commandOut);
+			out.println(commandOut);
+			out.flush();
+				
+			s2.close();
 			return;
 			
 		} else if ( command.equals("GETFROG") ) {
 			
 			//open a socket to client
 			//FROGPOSITION + frog.getX() + frog.getY() + \n
+			
+			//send response back to client
+			Socket s2 = new Socket("localhost", CLIENT_PORT);
+			
+			//Initialize data stream to send data out
+			OutputStream outstream = s2.getOutputStream();
+			PrintWriter out = new PrintWriter(outstream);
+
+			String commandOut = "GETFROG\n" + frog.getX() + "\n" + frog.getY() + "\n";
+			System.out.println("Sending: " + commandOut);
+			out.println(commandOut);
+			out.flush();
+				
+			s2.close();
+			
 			return;
 			
 		} else if ( command.equals("STARTGAME") ) {
 			
 			//check the start game function in gameprep for reference
+			
+			//let frog be controllable
+			//content.setFocusable(true);
+			//content.requestFocusInWindow();  //DOES NOT WORK WITHOUT THIS LINE!!
+			
+			//hide visibility button
+			//restartBtn.setVisible(false);
+			
+			//reset frogs position to start
+			frog.setX(400);
+			frog.setY(800);
+			//frogLabel.setLocation(frog.getX(), frog.getY());
+			
+			//restart threads for cars and logs
+			for ( int i = 0; i < car.length; i++ ) {
+				int temp = 300;//temp local variable for adjusting height during car initialization
+				
+				for ( int j = 0; j < car[i].length; j++ ) {
+					car[i][j].setX(i * 300);
+					car[i][j].setY(gameProperties.SCREEN_HEIGHT - temp);
+					car[i][j].setFrog(frog);
+					//car[i][j].setFrogLabel(frogLabel);
+					
+					//carLabel[i][j].setLocation( car[i][j].getX(), car[i][j].getY() );
+					
+					car[i][j].runThread();
+					
+					temp += 100;
+				}
+			}
+			for ( int i = 0; i < log.length; i++ ) {
+				int temp2 = 700;//temp local variable for adjusting height during log initialization
+				
+				for ( int j = 0; j < car[i].length; j++ ) {
+					log[i][j].setX(i * 300);
+					log[i][j].setY(gameProperties.SCREEN_HEIGHT - temp2);
+					log[i][j].setFrog(frog);
+					//log[i][j].setFrogLabel(frogLabel);
+					log[i][j].setIntersecting(true);
+					
+					//logLabel[i][j].setLocation( log[i][j].getX(), log[i][j].getY() );
+					
+					log[i][j].runThread();
+					
+					temp2 += 100;
+				}
+			}
+			
+			//frogLabel.setIcon( frogImage );
+			
+			//score = scoreDB.getScore();
+			//scoreLabel.setText("Score: " + score);
 			
 			return;
 			
@@ -135,28 +223,14 @@ public class ServerService implements Runnable {
 				
 			return;
 				
-		} else if ( command.equals("GETCARX") ) {
+		} else if ( command.equals("GETCAR") ) {
 			
 			//open a socket to client
 			//.....
 			
 			return;
 			
-		} else if ( command.equals("GETCARY") ) {
-			
-			//open a socket to client
-			//.....
-			
-			return;
-			
-		} else if ( command.equals("GETLOGX") ) {
-			
-			//open a socket to client
-			//.....
-			
-			return;
-			
-		} else if ( command.equals("GETLOGY") ) {
+		} else if ( command.equals("GETLOG") ) {
 			
 			//open a socket to client
 			//.....

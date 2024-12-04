@@ -108,6 +108,7 @@ public class gamePrepServer {
 						
 						server = new ServerSocket(SERVER_PORT);
 						System.out.println("Waiting for clients to connect...");
+						
 						while(true) {
 							Socket s = server.accept();
 							System.out.println("client connected");
