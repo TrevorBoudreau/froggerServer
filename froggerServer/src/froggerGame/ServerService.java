@@ -21,8 +21,6 @@ public class ServerService implements Runnable {
 	private logSprite log[][];
 	private carSprite car[][];
 	private scoreSQL scoreDB;
-
-	private char[] command;
 	
 	public ServerService() {}
 
@@ -155,19 +153,9 @@ public class ServerService implements Runnable {
 			
 		} else if ( command.equals("STARTGAME") ) {
 			
-			//check the start game function in gameprep for reference
-			
-			//let frog be controllable
-			//content.setFocusable(true);
-			//content.requestFocusInWindow();  //DOES NOT WORK WITHOUT THIS LINE!!
-			
-			//hide visibility button
-			//restartBtn.setVisible(false);
-			
 			//reset frogs position to start
 			frog.setX(400);
 			frog.setY(800);
-			//frogLabel.setLocation(frog.getX(), frog.getY());
 			
 			//restart threads for cars and logs
 			for ( int i = 0; i < car.length; i++ ) {
@@ -177,9 +165,6 @@ public class ServerService implements Runnable {
 					car[i][j].setX(i * 300);
 					car[i][j].setY(gameProperties.SCREEN_HEIGHT - temp);
 					car[i][j].setFrog(frog);
-					//car[i][j].setFrogLabel(frogLabel);
-					
-					//carLabel[i][j].setLocation( car[i][j].getX(), car[i][j].getY() );
 					
 					car[i][j].runThread();
 					
@@ -195,8 +180,6 @@ public class ServerService implements Runnable {
 					log[i][j].setFrog(frog);
 					//log[i][j].setFrogLabel(frogLabel);
 					log[i][j].setIntersecting(true);
-					
-					//logLabel[i][j].setLocation( log[i][j].getX(), log[i][j].getY() );
 					
 					log[i][j].runThread();
 					
@@ -217,9 +200,7 @@ public class ServerService implements Runnable {
 			out.flush();
 			
 			s2.close();
-			
-			//frogLabel.setIcon( frogImage );
-			
+
 			//score = scoreDB.getScore();
 			//scoreLabel.setText("Score: " + score);
 			
@@ -241,13 +222,7 @@ public class ServerService implements Runnable {
 					log[i][j].stopThread();
 				}
 			}
-			
-			//prevent player from moving
-			//content.setFocusable(false);
-			
-			//show visibility button
-			//restartBtn.setVisible(true);
-			
+
 			//update score
 			//scoreDB.addScore();
 			
@@ -269,8 +244,6 @@ public class ServerService implements Runnable {
 		
 			
 		} else if ( command.equals("LOSEGAME") ) {
-			
-			//check the LOSE game function in gameprep for reference
 			
 			System.out.println("GAME WIN");
 			
