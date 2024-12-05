@@ -17,7 +17,7 @@ public class gamePrepServer {
 		carSprite car[][];
 		
 		//scoreSQL scoreDB;
-		//score score = new score(0);
+		score score = new score(0);
 		
 		//set up score db
 		scoreSQL scoreDB = new scoreSQL();
@@ -72,7 +72,7 @@ public class gamePrepServer {
 			}
 		}
 		//set up score label
-		//score = scoreDB.getScore();
+		score.setScore(scoreDB.getScore());
 
 		final int SERVER_PORT = 5556;
 		Thread serverThread = new Thread ( new Runnable () {
@@ -90,7 +90,7 @@ public class gamePrepServer {
 						while(true) {
 							Socket s = server.accept();
 							
-							ServerService myService = new ServerService (s, frog, log, car, scoreDB);
+							ServerService myService = new ServerService (s, frog, log, car, scoreDB, score);
 							Thread serverServiceThread = new Thread(myService);
 							serverServiceThread.start();
 						}

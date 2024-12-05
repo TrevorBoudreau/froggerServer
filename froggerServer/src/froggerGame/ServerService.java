@@ -21,14 +21,17 @@ public class ServerService implements Runnable {
 	private logSprite log[][];
 	private carSprite car[][];
 	private scoreSQL scoreDB;
+	private score score;
 	
 	public ServerService() {}
 
-	public ServerService (Socket Socket, frogSprite frog, logSprite[][] log, carSprite[][] car, scoreSQL scoreDB) {
+	public ServerService (Socket Socket, frogSprite frog, logSprite[][] log, carSprite[][] car, scoreSQL scoreDB, score score) {
 		this.s = Socket;
 		this.frog = frog;
 		this.log = log;
 		this.car = car;
+		this.scoreDB = scoreDB;
+		this.score = score;
 	}
 	
 	public void run() {
@@ -187,6 +190,8 @@ public class ServerService implements Runnable {
 				}
 			}
 			
+			score.setScore(scoreDB.getScore());
+			
 			//send response back to client
 			Socket s2 = new Socket("localhost", CLIENT_PORT);
 			
@@ -195,14 +200,14 @@ public class ServerService implements Runnable {
 			PrintWriter out = new PrintWriter(outstream);
 
 			String commandOut = "STARTGAME\n";
+			
 			System.out.println("Sending: " + commandOut);
-			out.println(commandOut);
+			out.println(commandOut + score.getScore() );
 			out.flush();
 			
 			s2.close();
 
-			//score = scoreDB.getScore();
-			//scoreLabel.setText("Score: " + score);
+			
 			
 			return;
 			
@@ -224,7 +229,8 @@ public class ServerService implements Runnable {
 			}
 
 			//update score
-			//scoreDB.addScore();
+			scoreDB.addScore();
+			score.setScore(scoreDB.getScore());
 			
 			//send response back to client
 			Socket s2 = new Socket("localhost", CLIENT_PORT);
@@ -235,7 +241,7 @@ public class ServerService implements Runnable {
 
 			String commandOut = "WINGAME\n";
 			System.out.println("Sending: " + commandOut);
-			out.println(commandOut);
+			out.println(commandOut + score.getScore());
 			out.flush();
 				
 			s2.close();
@@ -259,6 +265,10 @@ public class ServerService implements Runnable {
 				}
 			}
 			
+			//update score
+			scoreDB.minusScore();
+			score.setScore(scoreDB.getScore());
+			
 			//send response back to client
 			Socket s2 = new Socket("localhost", CLIENT_PORT);
 			
@@ -268,7 +278,7 @@ public class ServerService implements Runnable {
 
 			String commandOut = "LOSEGAME\n";
 			System.out.println("Sending: " + commandOut);
-			out.println(commandOut);
+			out.println(commandOut + score.getScore());
 			out.flush();
 				
 			s2.close();
