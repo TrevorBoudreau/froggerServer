@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Scanner;
+
+import javax.swing.ImageIcon;
 
 
 //processing routine on server (B)
@@ -17,18 +20,17 @@ public class ServerService implements Runnable {
 	private frogSprite frog;
 	private logSprite log[][];
 	private carSprite car[][];
-	private score score;
+	private scoreSQL scoreDB;
 
 	private char[] command;
 	
 	public ServerService() {}
 
-	public ServerService (Socket Socket, frogSprite frog, logSprite[][] log, carSprite[][] car, score score) {
+	public ServerService (Socket Socket, frogSprite frog, logSprite[][] log, carSprite[][] car, scoreSQL scoreDB) {
 		this.s = Socket;
 		this.frog = frog;
 		this.log = log;
 		this.car = car;
-		this.score = score;
 	}
 	
 	public void run() {
@@ -202,6 +204,20 @@ public class ServerService implements Runnable {
 				}
 			}
 			
+			//send response back to client
+			Socket s2 = new Socket("localhost", CLIENT_PORT);
+			
+			//Initialize data stream to send data out
+			OutputStream outstream = s2.getOutputStream();
+			PrintWriter out = new PrintWriter(outstream);
+
+			String commandOut = "STARTGAME\n";
+			System.out.println("Sending: " + commandOut);
+			out.println(commandOut);
+			out.flush();
+			
+			s2.close();
+			
 			//frogLabel.setIcon( frogImage );
 			
 			//score = scoreDB.getScore();
@@ -212,7 +228,42 @@ public class ServerService implements Runnable {
 			
 		} else if ( command.equals("WINGAME") ) {
 				
-			//check the WIN game function in gameprep for reference
+			System.out.println("GAME WIN");
+			
+			//stop ongoing threads
+			for ( int i = 0; i < car.length; i++ ) {
+				for ( int j = 0; j < car[i].length; j++ ) {
+					car[i][j].stopThread();
+				}
+			}
+			for ( int i = 0; i < log.length; i++ ) {
+				for ( int j = 0; j < log[i].length; j++ ) {
+					log[i][j].stopThread();
+				}
+			}
+			
+			//prevent player from moving
+			//content.setFocusable(false);
+			
+			//show visibility button
+			//restartBtn.setVisible(true);
+			
+			//update score
+			//scoreDB.addScore();
+			
+			//send response back to client
+			Socket s2 = new Socket("localhost", CLIENT_PORT);
+			
+			//Initialize data stream to send data out
+			OutputStream outstream = s2.getOutputStream();
+			PrintWriter out = new PrintWriter(outstream);
+
+			String commandOut = "WINGAME\n";
+			System.out.println("Sending: " + commandOut);
+			out.println(commandOut);
+			out.flush();
+				
+			s2.close();
 				
 			return;
 		
@@ -220,14 +271,13 @@ public class ServerService implements Runnable {
 		} else if ( command.equals("LOSEGAME") ) {
 			
 			//check the LOSE game function in gameprep for reference
+			
+			
 				
 			return;
 				
 		} else if ( command.equals("GETCAR") ) {
-			
-			//open a socket to client
-			//.....
-			
+
 			//send response back to client
 			Socket s2 = new Socket("localhost", CLIENT_PORT);
 			
@@ -238,7 +288,7 @@ public class ServerService implements Runnable {
 			for ( int i = 0; i < car.length; i++ ) {
 				for ( int j = 0; j < car[i].length; j++ ) {
 					
-					String commandOut = "GETCAR\n" + car[i][j].getX() + "\n" + car[i][j].getY() + "\n";  /* + car[i][j].getIsMoving()*/
+					String commandOut = "GETCAR\n" + car[i][j].getX() + "\n" + car[i][j].getY() + "\n" +car[i][j].getIsMoving()+ "\n";
 					System.out.println("Sending: " + commandOut);
 					out.println(commandOut);
 					out.flush();
@@ -247,6 +297,8 @@ public class ServerService implements Runnable {
 			}
 			
 			s2.close();
+			
+			
 			
 			return;
 			
@@ -278,33 +330,30 @@ public class ServerService implements Runnable {
 			return;
 			
 		}
+	
 		
 		
 		
-		/*
-		if ( command.equals("PLAYER")) {
-			
-			int playerNo = in.nextInt();
-			String playerAction = in.next();
-			System.out.println("Player "+playerNo+" moves "+playerAction);
-			
-			
-			//send a response
-			Socket s2 = new Socket("localhost", CLIENT_PORT);
-			
-			//Initialize data stream to send data out
-			OutputStream outstream = s2.getOutputStream();
-			PrintWriter out = new PrintWriter(outstream);
-
-			String commandOut = "PLAYER "+playerNo+" POSTION 500 400\n";
-			System.out.println("Sending: " + commandOut);
-			out.println(commandOut);
-			out.flush();
-				
-			s2.close();
-
-		}
-		*/
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 }

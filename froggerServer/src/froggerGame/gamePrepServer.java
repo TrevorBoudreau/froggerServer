@@ -24,11 +24,11 @@ public class gamePrepServer {
 		carSprite car[][];
 		
 		//scoreSQL scoreDB;
-		score score = new score(0);
+		//score score = new score(0);
 		
 		//set up score db
-		//scoreDB = new scoreSQL();
-		//scoreDB.createDB();
+		scoreSQL scoreDB = new scoreSQL();
+		scoreDB.createDB();
 
 		//set up frog sprite
 		frog = new frogSprite(400, 800, 100, 90, gameProperties.FROG_IMAGE);
@@ -111,9 +111,8 @@ public class gamePrepServer {
 						
 						while(true) {
 							Socket s = server.accept();
-							System.out.println("client connected");
 							
-							ServerService myService = new ServerService (s, frog, log, car, score);
+							ServerService myService = new ServerService (s, frog, log, car, scoreDB);
 							Thread serverServiceThread = new Thread(myService);
 							serverServiceThread.start();
 						}
