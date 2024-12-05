@@ -272,7 +272,33 @@ public class ServerService implements Runnable {
 			
 			//check the LOSE game function in gameprep for reference
 			
+			System.out.println("GAME WIN");
 			
+			//stop ongoing threads
+			for ( int i = 0; i < car.length; i++ ) {
+				for ( int j = 0; j < car[i].length; j++ ) {
+					car[i][j].stopThread();
+				}
+			}
+			for ( int i = 0; i < log.length; i++ ) {
+				for ( int j = 0; j < log[i].length; j++ ) {
+					log[i][j].stopThread();
+				}
+			}
+			
+			//send response back to client
+			Socket s2 = new Socket("localhost", CLIENT_PORT);
+			
+			//Initialize data stream to send data out
+			OutputStream outstream = s2.getOutputStream();
+			PrintWriter out = new PrintWriter(outstream);
+
+			String commandOut = "LOSEGAME\n";
+			System.out.println("Sending: " + commandOut);
+			out.println(commandOut);
+			out.flush();
+				
+			s2.close();
 				
 			return;
 				
@@ -317,7 +343,7 @@ public class ServerService implements Runnable {
 			for ( int i = 0; i < log.length; i++ ) {
 				for ( int j = 0; j < log[i].length; j++ ) {
 					
-					String commandOut = "GETLOG\n" + log[i][j].getX() + "\n" + log[i][j].getY() + "\n";  /* + car[i][j].getIsMoving()*/
+					String commandOut = "GETLOG\n" + log[i][j].getX() + "\n" + log[i][j].getY() + "\n" + log[i][j].isIntersecting();
 					System.out.println("Sending: " + commandOut);
 					out.println(commandOut);
 					out.flush();
